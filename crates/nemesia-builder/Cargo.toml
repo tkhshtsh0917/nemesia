@@ -12,3 +12,5 @@ nemesia-index.workspace = true
 
 [dev-dependencies]
 nemesia-engine.workspace = true
+
+serde_json.workspace = true
