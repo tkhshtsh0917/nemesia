@@ -1,0 +1,23 @@
+[package]
+name = "nemesia-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+nemesia-engine = { path = "../crates/nemesia-engine" }
+nemesia-index = { path = "../crates/nemesia-index" }
+
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "index"
+path = "fuzz_targets/index.rs"
+test = false
+doc = false
+bench = false

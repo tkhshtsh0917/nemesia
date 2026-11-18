@@ -1,0 +1,3 @@
+Nemesia draws on the Asearch project, which provided the development and validation patterns described in docs/reuse.md.
+
+The Sudachi Rust test dictionary is redistributed under Apache-2.0. Its provenance and copyright notice are in crates/nemesia-analyzer/tests/fixtures/NOTICE. Native CLI distributions bundle notices for their dependencies.
