@@ -4,3 +4,6 @@ run = [
   "cargo clippy --locked --workspace --all-targets -- -D warnings",
   "cargo test --locked --workspace",
 ]
+
+[tasks.docs]
+run = "RUSTDOCFLAGS='-D warnings' cargo doc --locked --workspace --exclude nemesia-cli --no-deps"

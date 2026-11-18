@@ -12,7 +12,7 @@
 
 1. 名詞はSudachiの正規化形、動詞と形容詞は辞書形に正規化した見出し語を採用します。正規化済みの表示キーでまとめます。表示形が複数あればUTF-8のバイト順で最初のものを残します。単語を1文字ずつに分割せず、語として保持します。例えば `食べた` は表示候補 `食べる` に対応付けられます。
 2. 同じ語は文書ごとに最大1回数えます。既定の `weight` には、その語が出現した文書の数を使います。同じ記事内に何度出ても重みは増えません。確認済みの適切な表記の揺れを別名として保持し、辞書の読みとローマ字も候補ごとの上限内で加えます。別名の出現頻度は順位に影響させません。読みが同じでも異なる語は分けて保持します。
-3. 決定的な候補JSONLを出力します。抽出した候補はUTF-8の正規化キーで並べ、数値IDを1から割り当てます。候補集合が同じならIDは安定し、有効範囲はその索引世代です。外部の作成側は候補を直接入力する際に独自の安定したIDを指定できます。文書スナップショット、正規化した入力と出力のハッシュ、辞書と設定の識別情報、候補数、別名数、除外理由ごとの件数を記録します。
+3. 決定的な候補JSONLを出力します。抽出した候補はUTF-8の正規化キーで並べ、数値IDを1から割り当てます。候補集合が同じならIDは安定し、有効範囲はその索引世代です。外部の作成側は候補を直接入力する際に独自の安定したIDを指定できます。文書スナップショット、入力JSONLと候補出力のハッシュ、辞書と設定の識別情報、候補数、別名数、除外理由ごとの件数を記録します。
 4. 候補JSONLをビルダーに渡します。ビルダーは手作業で選んだ候補や他言語の候補も同じ形式で扱い、コンパクトな読み取り専用索引を生成します。入力行長、形態素解析の入力長、一意な文書数・語数、別名数に上限を設けます。上限を超えるとジョブは失敗し、公開済みの世代は引き続き利用できます。検証を通過した世代を一単位で公開します。
 
 ## 出現頻度と順位のメタデータ
@@ -34,9 +34,11 @@ bm25_sum(t) = sum of bm25(t, d) for documents that contain t
 以下のコマンドで候補と索引を生成します。
 
 ```sh
-nemesia extract --input documents.jsonl --dictionary system.dic --policy corpus-policy.json --output candidates.jsonl --stats term-stats.jsonl
+nemesia extract --input documents.jsonl --dictionary system.dic --policy corpus-policy.json --output candidates.jsonl --stats term-stats.jsonl --query-rules query-rules.json --provenance extraction.json
 nemesia build --input candidates.jsonl --output suggestions.nmsi
 ```
+
+[SudachiDict](https://github.com/WorksApplications/SudachiDict) のCore辞書を展開し、アーカイブ内の `system_core.dic` を `--dictionary` に指定できます。既定の抽出設定を使う場合は `--policy` を省略します。別の重みを試すための最小設定は `{"ranking":"bm25-sum"}` です。統計、クエリ変換表、来歴の出力は任意です。抽出結果と索引の出力には新しいパスを指定します。
 
 CLIのコマンドと、入力解析、形態素抽出、変換ルール、来歴記録は本体リポジトリが担当します。デモは小さな準備スクリプトを持ち、実際の検索対象フィールドを文書JSONLに出力し、固定したCLIを呼び出して期待するハッシュを検証します。この構成なら、後段の検索サービスを問わず抽出処理を使えます。
 

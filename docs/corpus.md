@@ -12,7 +12,7 @@ Use [Sudachi's Rust implementation](https://github.com/WorksApplications/sudachi
 
 1. Keep Sudachi's normalized form for nouns, and normalized dictionary-form lemmas for verbs and adjectives. Group by the normalized display key. When multiple display forms remain, keep the one that sorts first by UTF-8 bytes. Keep lexical terms instead of splitting them into individual characters. For example, `食べた` can contribute to the displayed candidate `食べる`.
 2. Count each term at most once per input document. Use the number of distinct source documents as its default `weight`. Repetition within one article does not raise its weight. Preserve explicitly reviewed aliases for eligible surface variants, and add dictionary readings and romanizations within the same per-candidate limit. Alias frequency does not affect rank. Keep distinct terms separate when they only share a reading.
-3. Emit deterministic candidate JSONL. For extracted data, order terms by the normalized UTF-8 key and assign numeric IDs starting at 1. Those IDs are stable for the same candidate set and scoped to the index generation. External producers can provide their own stable IDs in direct candidate input. Record the document snapshot, canonical input and output hashes, dictionary/policy identity, candidate and alias counts, and exclusions by reason.
+3. Emit deterministic candidate JSONL. For extracted data, order terms by the normalized UTF-8 key and assign numeric IDs starting at 1. Those IDs are stable for the same candidate set and scoped to the index generation. External producers can provide their own stable IDs in direct candidate input. Record the document snapshot, input JSONL and candidate output hashes, dictionary/policy identity, candidate and alias counts, and exclusions by reason.
 4. Run the builder on the candidate JSONL. The builder accepts hand-curated candidates or other languages through the same format. It produces the compact read-only index. Use bounded input lines, tokenization length, unique-document and unique-term counts, and alias limits. Hard budget errors fail the job and leave the published generation available. Publish each validated generation as one unit.
 
 ## Frequency and ranking metadata
@@ -34,9 +34,11 @@ Use a bounded two-pass build with term counts per document and deterministic tra
 Generate candidates and the index with these commands:
 
 ```sh
-nemesia extract --input documents.jsonl --dictionary system.dic --policy corpus-policy.json --output candidates.jsonl --stats term-stats.jsonl
+nemesia extract --input documents.jsonl --dictionary system.dic --policy corpus-policy.json --output candidates.jsonl --stats term-stats.jsonl --query-rules query-rules.json --provenance extraction.json
 nemesia build --input candidates.jsonl --output suggestions.nmsi
 ```
+
+Extract the Core edition of [SudachiDict](https://github.com/WorksApplications/SudachiDict) and pass its `system_core.dic` file to `--dictionary`. Omit `--policy` to use the defaults. A minimal policy to try the alternate weight is `{"ranking":"bm25-sum"}`. The statistics, query rules and provenance outputs are optional. Choose fresh output paths for extraction and index building.
 
 The core repository owns these commands, including parsing, morphological extraction, rules and provenance. The demo owns a small preparation script that exports its actual search field as document JSONL, invokes the pinned CLI and checks expected hashes. This keeps the extraction pipeline usable with any downstream search service.
 

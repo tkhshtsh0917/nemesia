@@ -2,17 +2,40 @@
 
 [日本語](README.ja.md)
 
-Fast, typo-tolerant query autocompletion powered by Rust and WebAssembly.
+Fast, typo-tolerant query autocompletion powered by Rust and WebAssembly. Nemesia suggests registered completions from the beginning of your input. Use it to fill a search box before sending the completed query to your existing search service.
 
-Nemesia is designed to suggest words extracted from the downstream search corpus, or other registered completions from the first few characters, even when the input contains a small typo. A native CLI builds the suggestion index. The browser loads it and computes suggestions locally. This repository contains the Rust engine, CLI and WASM. The TypeScript adapter, demo and browser tests belong to [nemesia-demo](https://github.com/tkhshtsh0917/nemesia-demo).
+## Quick start
 
-**Status:** v0.1 implementation and local verification. See the roadmap for hosted publication status.
+Download the matching CLI from [GitHub Releases](https://github.com/tkhshtsh0917/nemesia/releases): `nemesia-macos-aarch64` for Apple Silicon or `nemesia-linux-x86_64` for Linux x86-64. Compare its SHA-256 with the matching entry in `SHA256SUMS`. Run these commands in a directory containing the downloaded binary:
 
-- [Architecture](docs/architecture.md) describes the two repositories, index, runtime limits and artifact contract.
-- [Matching specification](docs/matching.md) defines the candidate model, prefix distance and ranking.
-- [Corpus preparation](docs/corpus.md) defines Sudachi extraction and the ranking metadata.
-- [Reuse assessment](docs/reuse.md) records what can carry over from Asearch and its demo.
-- [Contributing](CONTRIBUTING.md) explains the development and quick-start commands.
-- [Roadmap](docs/roadmap.md) defines milestones, acceptance checks and benchmark targets.
+```sh
+case "$(uname -sm)" in
+  'Darwin arm64') cli=./nemesia-macos-aarch64 ;;
+  'Linux x86_64') cli=./nemesia-linux-x86_64 ;;
+esac
+chmod +x "$cli"
+printf '%s\n' '{"id":1,"text":"Tokyo Station","weight":10}' > candidates.jsonl
+"$cli" build --input candidates.jsonl --output suggestions.nmsi
+"$cli" suggest --index suggestions.nmsi --query 'toky st'
+```
 
-The name comes from the nemesia flower's association with tolerance, an apt description of giving users room for a typo. [Flower meaning](https://ozaki-flowerpark.co.jp/dictionary/7568/).
+```json
+[{ "id": 1, "text": "Tokyo Station", "distance": 1 }]
+```
+
+Use a fresh output path if you run `build` again. This example uses a supplied candidate list. The [usage guide](docs/usage.md) also covers building from source, Japanese candidate extraction, and embedding Nemesia in a Rust application.
+
+## Use it in a browser
+
+Use the CLI output `suggestions.nmsi` and the WASM from the same release. The [browser quick start](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/browser-quickstart.md) shows how to generate JavaScript bindings, load the index, and display suggestions in an existing page. See the [live demo](https://tkhshtsh0917.github.io/nemesia-demo/) and [Rust API reference](https://tkhshtsh0917.github.io/nemesia-demo/api/rust/) once the release is deployed.
+
+## Documentation
+
+- [Usage guide](docs/usage.md) for installation, CLI commands, and Rust integration.
+- [Corpus preparation](docs/corpus.md) and [matching specification](docs/matching.md) for candidate data, normalization, and ranking.
+- [Contributing](CONTRIBUTING.md) and [design and project documents](docs/README.md) for development, verification, and architecture.
+- [Performance and ranking evaluation](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/performance.md) for measured results and reproducible workloads.
+
+The name comes from the nemesia flower's association with tolerance. [Flower meaning](https://ozaki-flowerpark.co.jp/dictionary/7568/).
+
+Code is available under the [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE) license. See [NOTICE](NOTICE) for third-party notices.

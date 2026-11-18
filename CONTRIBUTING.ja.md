@@ -1,16 +1,30 @@
 # コントリビュート
 
-[English](CONTRIBUTING.md)
+[English](CONTRIBUTING.md) · [Nemesiaの利用ガイド](docs/ja/usage.md)
 
-このチェックアウトで `rustup show` と `mise run check` を実行します。Rustupが固定したツールチェーンを選び、miseがCIと同じ検証を実行します。ブラウザ側の変更はnemesia-demoで行い、日英の文書を同時に更新してください。
+このリポジトリはRustの照合、索引生成、ネイティブのSudachi抽出、CLI、WASM ABIを担当します。JavaScript統合、デモUI、ブラウザテストは [nemesia-demo](https://github.com/tkhshtsh0917/nemesia-demo) が担当します。
 
-CLIでローカルの索引を作り、照合できます。
+## 準備と変更の検証
+
+Rustupとmiseをインストールし、チェックアウトしたディレクトリで次を実行します。Rustupは `rust-toolchain.toml` のバージョンとコンポーネントを使います。
 
 ```sh
-cargo build --locked --release -p nemesia-cli
-printf '%s\n' '{"id":1,"text":"Tokyo Station"}' > candidates.jsonl
-./target/release/nemesia build --input candidates.jsonl --output suggestions.nmsi
-./target/release/nemesia suggest --index suggestions.nmsi --query 'toky st'
+rustup show
+mise run check
+mise run docs
 ```
 
-`build` や `extract` を呼び出すたびに新しい出力パスを指定します。ネイティブのSudachi工程は[コーパスの作り方](docs/ja/corpus.md)を参照してください。読み取り用モジュールは `cargo build --locked --release -p nemesia-wasm --target wasm32-unknown-unknown` でビルドできます。利用側のプロジェクトでwasm-bindgen 0.2.129を使ってバインディングを生成してください。
+`check` はrustfmt、Clippy、ロック済みのワークスペーステストを実行します。`docs` は公開Rust APIリファレンスを生成し、rustdocの警告があればエラーにします。エンジンのリファレンスは `target/doc/nemesia_engine/index.html` から確認できます。変更に関係する仕様は[ドキュメント一覧](docs/ja/README.md)から探せます。
+
+WASMの変更では、ターゲット別に検査し、デモ側で成果物をテストします。
+
+```sh
+cargo clippy --locked -p nemesia-wasm --target wasm32-unknown-unknown -- -D warnings
+cargo build --locked --release -p nemesia-wasm --target wasm32-unknown-unknown
+```
+
+パーサーやファイル配置を変更した場合は、Rust CIのワークフローで固定したnightlyツールチェーンとcargo-fuzzを使い、`bash tools/fuzz-index.sh 20` を実行します。
+
+## プルリクエストの準備
+
+テストは観察できる挙動を対象にします。照合の変更は参照実装と結果の順序を比較します。形式の変更は[NMSIのバイト配置](docs/ja/format.md)を更新し、不正な入力も検証します。英語版と日本語訳は同じ変更で更新してください。APIコメントには挙動、入力、所有権、上限、エラーを書きます。プルリクエストには実行した検証と結果を記載してください。
