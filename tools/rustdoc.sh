@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-output="${1:?expected output archive}"
+output="${1:?expected site directory}"
+if [[ -e "$output" || -L "$output" ]]; then
+  echo "Rustdoc output already exists: $output" >&2
+  exit 1
+fi
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 
@@ -12,4 +16,5 @@ for crate in nemesia_analyzer nemesia_builder nemesia_engine nemesia_index nemes
 done
 rm -f "$docs/.lock"
 cp tools/rustdoc-index.html "$docs/index.html"
-tar -czf "$output" -C "$docs" .
+mkdir -p "$(dirname "$output")"
+mv "$docs" "$output"

@@ -27,11 +27,12 @@ printf '%s\n' '{"id":1,"text":"Tokyo Station","weight":10}' > candidates.jsonl
 
 ## ブラウザで使う
 
-CLIが出力した `suggestions.nmsi` と、同じリリースのWASMを使います。[ブラウザのクイックスタート](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/ja/browser-quickstart.md)では、JavaScriptバインディングを生成し、索引を読み込んで、既存のページに候補を表示する方法を説明します。リリースの配信後は[デモ](https://tkhshtsh0917.github.io/nemesia-demo/)と[Rust APIリファレンス](https://tkhshtsh0917.github.io/nemesia-demo/api/rust/)も利用できます。
+CLIが出力した `suggestions.nmsi` と、同じリリースのWASMを使います。[ブラウザのクイックスタート](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/ja/browser-quickstart.md)では、JavaScriptバインディングを生成し、索引を読み込んで、既存のページに候補を表示する方法を説明します。リリースの配信後は[デモ](https://tkhshtsh0917.github.io/nemesia-demo/)も利用できます。
 
 ## ドキュメント
 
 - インストール、CLI、Rust連携は[利用ガイド](docs/ja/usage.md)。
+- 現在の公開版の[Rust APIリファレンス](https://tkhshtsh0917.github.io/nemesia/)。
 - 候補データ、正規化、順位付けは[コーパス準備](docs/ja/corpus.md)と[照合仕様](docs/ja/matching.md)。
 - 開発・検証・設計は[コントリビュート](CONTRIBUTING.ja.md)と[設計・プロジェクト文書](docs/ja/README.md)。
 - 実測値と再現可能なワークロードは[性能と順位付けの評価](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/ja/performance.md)。

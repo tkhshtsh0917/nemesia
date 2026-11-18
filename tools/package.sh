@@ -44,5 +44,4 @@ if [[ "$platform" == linux-x86_64 || "${NEMESIA_PACKAGE_WASM:-}" == 1 ]]; then
   cargo metadata --locked --format-version 1 > "$work/metadata.json"
   python3 tools/licenses.py "$work/metadata.json" "$work/licenses"
   tar -czf dist/nemesia-licenses.tar.gz -C "$work" licenses
-  bash tools/rustdoc.sh dist/nemesia-rustdoc.tar.gz
 fi

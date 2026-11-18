@@ -1,0 +1,80 @@
+name: Publish Rust API reference
+run-name: Rust API reference for ${{ inputs.tag }}
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published Nemesia release tag
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: rustdoc-pages
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check published tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          gh release view "$TAG" --json isDraft,isPrerelease --jq '(.isDraft or .isPrerelease) | not' | grep -Fx true
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          persist-credentials: false
+      - name: Build API reference
+        env:
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash tools/rustdoc.sh target/rustdoc-site
+          jq -n --arg tag "$TAG" --arg revision "$(git rev-parse HEAD)" \
+            '{tag: $tag, revision: $revision}' > target/rustdoc-site/release.json
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
+        with:
+          path: target/rustdoc-site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Require the current release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag }}
+        run: test "$(gh release view --json tagName --jq .tagName)" = "$TAG"
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
+        id: pages
+      - name: Verify deployed reference and release
+        env:
+          PAGE: ${{ steps.pages.outputs.page_url }}
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${PAGE%/}"
+          for attempt in {1..12}; do
+            if actual="$(curl --max-time 15 -fsS "$base/release.json?run=$GITHUB_RUN_ID" | jq -er .tag)" && [[ "$actual" == "$TAG" ]]; then
+              curl --max-time 15 -fsS "$base/nemesia_engine/index.html" -o /dev/null
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1

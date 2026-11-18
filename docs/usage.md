@@ -59,4 +59,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-Open a validated index once and reuse it across queries. See the [Rust API reference](https://tkhshtsh0917.github.io/nemesia-demo/api/rust/) for crate and boundary details. For a web application instead, follow the [browser quick start](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/browser-quickstart.md).
+Open a validated index once and reuse it across queries. See the [Rust API reference](https://tkhshtsh0917.github.io/nemesia/) for crate and boundary details. For a web application instead, follow the [browser quick start](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/browser-quickstart.md).

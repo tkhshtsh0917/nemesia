@@ -59,4 +59,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-索引を一度開いて検証し、複数のクエリに再利用してください。crateとAPIの詳細は[Rust APIリファレンス](https://tkhshtsh0917.github.io/nemesia-demo/api/rust/)を参照してください。Webアプリケーションでは[ブラウザのクイックスタート](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/ja/browser-quickstart.md)を使えます。
+索引を一度開いて検証し、複数のクエリに再利用してください。crateとAPIの詳細は[Rust APIリファレンス](https://tkhshtsh0917.github.io/nemesia/)を参照してください。Webアプリケーションでは[ブラウザのクイックスタート](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/ja/browser-quickstart.md)を使えます。

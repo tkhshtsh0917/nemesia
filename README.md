@@ -27,11 +27,12 @@ Use a fresh output path if you run `build` again. This example uses a supplied c
 
 ## Use it in a browser
 
-Use the CLI output `suggestions.nmsi` and the WASM from the same release. The [browser quick start](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/browser-quickstart.md) shows how to generate JavaScript bindings, load the index, and display suggestions in an existing page. See the [live demo](https://tkhshtsh0917.github.io/nemesia-demo/) and [Rust API reference](https://tkhshtsh0917.github.io/nemesia-demo/api/rust/) once the release is deployed.
+Use the CLI output `suggestions.nmsi` and the WASM from the same release. The [browser quick start](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/browser-quickstart.md) shows how to generate JavaScript bindings, load the index, and display suggestions in an existing page. See the [live demo](https://tkhshtsh0917.github.io/nemesia-demo/) once the release is deployed.
 
 ## Documentation
 
 - [Usage guide](docs/usage.md) for installation, CLI commands, and Rust integration.
+- [Rust API reference](https://tkhshtsh0917.github.io/nemesia/) for the current published release.
 - [Corpus preparation](docs/corpus.md) and [matching specification](docs/matching.md) for candidate data, normalization, and ranking.
 - [Contributing](CONTRIBUTING.md) and [design and project documents](docs/README.md) for development, verification, and architecture.
 - [Performance and ranking evaluation](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/performance.md) for measured results and reproducible workloads.

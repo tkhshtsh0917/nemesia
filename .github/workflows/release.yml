@@ -45,8 +45,8 @@ jobs:
           GH_REPO: ${{ github.repository }}
           TAG: ${{ github.ref_name }}
         run: |
-          sha256sum nemesia-linux-x86_64 nemesia-macos-aarch64 nemesia_wasm.wasm nemesia-abi.json nemesia-licenses.tar.gz nemesia-rustdoc.tar.gz > SHA256SUMS
-          gh release create "$TAG" nemesia-linux-x86_64 nemesia-macos-aarch64 nemesia_wasm.wasm nemesia-abi.json nemesia-licenses.tar.gz nemesia-rustdoc.tar.gz SHA256SUMS --verify-tag --generate-notes
+          sha256sum nemesia-linux-x86_64 nemesia-macos-aarch64 nemesia_wasm.wasm nemesia-abi.json nemesia-licenses.tar.gz > SHA256SUMS
+          gh release create "$TAG" nemesia-linux-x86_64 nemesia-macos-aarch64 nemesia_wasm.wasm nemesia-abi.json nemesia-licenses.tar.gz SHA256SUMS --verify-tag --generate-notes
     outputs:
       tag: ${{ github.ref_name }}
   notify:
@@ -67,3 +67,15 @@ jobs:
           DEMO: ${{ github.repository_owner }}/nemesia-demo
           TAG: ${{ needs.publish.outputs.tag }}
         run: gh workflow run pages.yml --repo "$DEMO" --ref main --field tag="$TAG" --field automatic=true
+  notify-rustdoc:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.publish.outputs.tag }}
+        run: gh workflow run rustdoc-pages.yml --ref main --field tag="$TAG"
