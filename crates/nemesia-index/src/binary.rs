@@ -2,10 +2,14 @@
 use crate::{MAX_CANDIDATES, MAX_INDEX_BYTES, MAX_KEY, normalize};
 use std::ops::Range;
 
+/// Size of the NMSI v1 header in bytes.
 pub const HEADER: usize = 32;
+/// NMSI layout revision accepted by this reader.
 pub const VERSION: u32 = 1;
+/// Key normalization revision expected by this reader.
 pub const NORMALIZATION: u32 = 1;
 
+/// A structurally validated, immutable NMSI snapshot that owns its bytes.
 #[derive(Debug)]
 pub struct Index {
     bytes: Vec<u8>,
@@ -164,13 +168,18 @@ impl Index {
         Ok(())
     }
 
+    /// Returns the number of display candidates, excluding aliases.
     pub fn len(&self) -> usize {
         self.count
     }
+    /// Returns whether the index contains no display candidates.
     pub fn is_empty(&self) -> bool {
         self.count == 0
     }
 
+    /// Returns the ID, ranking weight, and display string for a row ordinal.
+    ///
+    /// Panics if the ordinal is outside `0..self.len()`.
     pub fn candidate(&self, row: usize) -> (u32, u32, &str) {
         assert!(row < self.count);
         let at = self.rows + 16 * row;
@@ -195,6 +204,7 @@ impl Index {
         (word(&self.bytes, offset), word(&self.bytes, offset + 4))
     }
 
+    /// Looks up a transition for one scalar from a valid trie node ordinal.
     pub fn child(&self, node: usize, c: char) -> Option<usize> {
         let range = self.range(node, 0);
         let data = &self.bytes[self.edges + 8 * range.start..self.edges + 8 * range.end];
@@ -207,6 +217,7 @@ impl Index {
         (word(entry, 0) == needle).then(|| word(entry, 4))
     }
 
+    /// Iterates scalar and child ordinal pairs for a valid node.
     pub fn children(&self, node: usize) -> impl Iterator<Item = (u32, usize)> + '_ {
         self.range(node, 0).map(|i| {
             let (symbol, child) = self.pair(self.edges, i);
@@ -214,6 +225,7 @@ impl Index {
         })
     }
 
+    /// Iterates candidate ordinal and key tier pairs for a valid node.
     pub fn postings(&self, node: usize) -> impl Iterator<Item = (usize, usize)> + '_ {
         self.range(node, 8).map(|i| self.pair(self.posts, i))
     }

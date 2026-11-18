@@ -16,6 +16,7 @@ jobs:
       - run: cargo fmt --all --check
       - run: cargo clippy --locked --workspace --all-targets -- -D warnings
       - run: cargo test --locked --workspace
+      - run: RUSTDOCFLAGS="-D warnings" cargo doc --locked --workspace --exclude nemesia-cli --no-deps
       - run: cargo clippy --locked -p nemesia-wasm --target wasm32-unknown-unknown -- -D warnings
   fuzz:
     runs-on: ubuntu-latest

@@ -17,6 +17,13 @@ fn encode(bytes: &mut Vec<u8>, words: impl IntoIterator<Item = usize>) {
     }
 }
 
+/// Compiles candidate rows into an NMSI v1 byte vector.
+///
+/// Output is independent of input row order. Duplicate IDs, duplicate
+/// display text, empty keys and inputs exceeding format limits are rejected.
+///
+/// Pass the returned bytes to [`nemesia_index::binary::Index::open`] or
+/// write them as a static completion index.
 pub fn build(input: &[Candidate]) -> Result<Vec<u8>, &'static str> {
     if input.len() > MAX_CANDIDATES {
         return Err("candidate limit exceeded");

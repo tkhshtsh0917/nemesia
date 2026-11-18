@@ -2,6 +2,7 @@
 use crate::{Quality, Rank, Suggestion, budget, queries};
 use nemesia_index::{MAX_QUERY, binary::Index};
 
+/// Default traversal budget shared by the two query variants.
 pub const WORK_LIMIT: usize = 12_000_000;
 const INF: u8 = 255;
 
@@ -122,7 +123,16 @@ impl Row {
     }
 }
 
-/// Evaluates both variants against one snapshot, then selects the exact top k.
+/// Returns up to `limit` unique, ranked completions for an input fragment.
+///
+/// `derived` can carry one alternate spelling of `raw`, such as romaji
+/// derived from mixed IME input. Ranking considers both variants together.
+/// A blank original input returns an empty vector.
+///
+/// # Errors
+///
+/// Returns an error for invalid query text, a result limit outside
+/// `1..=20`, or exhausted traversal work. The index remains reusable.
 pub fn suggest(
     index: &Index,
     raw: &str,
@@ -132,7 +142,10 @@ pub fn suggest(
     suggest_bounded(index, raw, derived, limit, WORK_LIMIT)
 }
 
-/// Evaluates a query under an explicit budget shared by both variants.
+/// Like [`suggest`], with a caller-supplied work budget for both variants.
+///
+/// Pass [`WORK_LIMIT`] for the default. If the budget is exhausted, an
+/// error is returned without partial results.
 pub fn suggest_bounded(
     index: &Index,
     raw: &str,

@@ -12,6 +12,7 @@ use wana_kana::ConvertJapanese;
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
+/// Server-side tokenizer settings, filters, and reviewed alternate readings.
 pub struct Policy {
     pub split_mode: char,
     pub keep_unknown: bool,
@@ -57,6 +58,7 @@ pub(crate) struct Token {
     pub aliases: BTreeSet<String>,
 }
 
+/// A reusable Sudachi tokenizer backed by one native system dictionary.
 pub struct Analyzer {
     tokenizer: StatefulTokenizer<Rc<JapaneseDictionary>>,
     morphemes: MorphemeList<Rc<JapaneseDictionary>>,

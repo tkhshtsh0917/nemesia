@@ -1,16 +1,25 @@
-//! Reference query semantics and ranked completion results.
+//! Ranked prefix completions over a validated Nemesia index.
+//!
+//! Use [`suggest`] for ordinary queries. The [`reference()`] implementation
+//! scans every candidate and is useful for verifying search behavior.
 #![forbid(unsafe_code)]
 
 use nemesia_index::{Candidate, MAX_KEY, MAX_QUERY, normalize};
 use serde::Serialize;
 
+/// Default number of suggestions in the CLI and demo.
 pub const DEFAULT_LIMIT: usize = 8;
+/// Largest accepted number of suggestions per query.
 pub const MAX_LIMIT: usize = 20;
 
+/// An owned, ranked completion. It survives later queries and index disposal.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Suggestion {
+    /// Candidate identifier supplied at build time.
     pub id: u32,
+    /// Original display text to insert into the search box.
     pub text: String,
+    /// Minimum edit distance of the path that ranked this candidate.
     pub distance: u8,
 }
 
@@ -60,6 +69,9 @@ fn budget(query: &str) -> u8 {
 }
 
 /// Computes the minimum edit distance over nonempty leading prefixes.
+///
+/// Pass normalized text within the query and key limits. An empty key
+/// returns `None`. This reference helper is intended for testing.
 pub fn prefix_distance(query: &[char], value: &str) -> Option<u8> {
     let mut previous: Vec<u16> = (0..=query.len() as u16).collect();
     let mut row = previous.clone();

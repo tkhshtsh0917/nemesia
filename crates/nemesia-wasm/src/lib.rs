@@ -5,11 +5,14 @@ use nemesia_engine::suggest;
 use nemesia_index::binary::Index;
 use wasm_bindgen::prelude::*;
 
+/// The JS binding contract version. This is separate from the NMSI version.
 #[wasm_bindgen]
 pub fn abi_version() -> u32 {
     1
 }
 
+/// A reusable index handle for the generated JavaScript bindings.
+/// Dispose of it with the JavaScript `free()` method when done.
 #[wasm_bindgen]
 pub struct CompletionIndex(Index);
 
@@ -21,7 +24,11 @@ impl CompletionIndex {
         Index::open(bytes).map(Self).map_err(JsError::new)
     }
 
-    /// Returns a string owned by the JS caller and independent of future requests.
+    /// Returns a JSON array of ranked completions encoded as an owned string.
+    ///
+    /// Pass one optional derived spelling. Invalid input, limits outside
+    /// `1..=20`, and work exhaustion are surfaced as JavaScript errors.
+    /// Results stay valid after later requests and disposal of the handle.
     pub fn complete(
         &self,
         query: &str,

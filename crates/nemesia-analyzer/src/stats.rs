@@ -8,6 +8,7 @@ const MAX_ELIGIBLE_TOKENS: usize = 2_000_000;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
+/// Searchable text and a document ID used to count term frequency.
 pub struct Document {
     pub id: String,
     pub text: String,
@@ -15,13 +16,17 @@ pub struct Document {
 
 #[derive(Default, Clone, Copy, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
+/// Corpus statistic stored as each candidate's static ranking weight.
 pub enum Ranking {
     #[default]
+    /// Number of distinct source documents containing the term.
     Df,
+    /// Sum of per-document BM25 scores, rounded after scaling by 1,000.
     Bm25Sum,
 }
 
 #[derive(Debug, Serialize)]
+/// Corpus counts and the experimental BM25 weight for one candidate.
 pub struct TermStats {
     pub id: u32,
     pub df: u32,
@@ -42,6 +47,7 @@ pub struct Summary {
     pub scale: f64,
 }
 
+/// Deterministic candidate rows, per-term statistics, and corpus totals.
 pub struct Extraction {
     pub rows: Vec<Candidate>,
     pub stats: Vec<TermStats>,
@@ -61,6 +67,10 @@ const B: f64 = 0.75;
 const SCALE: f64 = 1000.0;
 
 /// Aggregates term counts per document before deriving corpus-wide weights.
+///
+/// Duplicate document IDs, invalid source text, tokenizer failures and
+/// exceeded resource limits are returned as errors. On success, row IDs
+/// follow normalized key order and are scoped to the generated index.
 pub fn extract(
     analyzer: &mut Analyzer,
     mut documents: Vec<Document>,
