@@ -6,7 +6,7 @@
 
 Generate Japanese completion terms from the same documents and fields that the host will search after submission. Use the document snapshot ID and a UTF-8 JSONL projection such as `{"id":"doc-1","text":"りんごを食べた。"}`. If the host searches questions, export question text. If it searches titles and bodies, export those fields in a deterministic order under one document ID. Exclude fields outside the search scope, such as display-only snippets. The input requires unique document IDs.
 
-Use [Sudachi's Rust implementation](https://github.com/WorksApplications/sudachi.rs) in the native CLI, with one locked dictionary snapshot and a versioned extraction policy. Begin with Sudachi part-of-speech categories `名詞`, `動詞` and `形容詞` and split mode B. Reject empty keys and apply a configurable stopword/stoptag policy. Review split modes, unknown words, frequent low-value terms and unwanted proper nouns on a documented sample before fixing the default policy at M1.
+Use [Sudachi's Rust implementation](https://github.com/WorksApplications/sudachi.rs) in the native CLI, with one locked dictionary snapshot and a versioned extraction policy. Begin with Sudachi part-of-speech categories `名詞`, `動詞` and `形容詞` and split mode B. Reject empty keys and apply a configurable stopword/stoptag policy. The defaults exclude unknown words, numerals, dependent verbs and a short list of high-frequency terms. The policy's `aliases` field gives reviewed readings priority if the dictionary supplies only one. The demo adds `nihon` for 日本 while keeping Sudachi-derived `nippon`. Long vowels can be represented as `biitoruzu`, `bi-toruzu` and `びーとるず`.
 
 ## Extract, aggregate and compile
 
@@ -31,7 +31,7 @@ Use a bounded two-pass build with term counts per document and deterministic tra
 
 ## CLI and demo preparation
 
-Proposed commands, to be implemented at M3:
+Generate candidates and the index with these commands:
 
 ```sh
 nemesia extract --input documents.jsonl --dictionary system.dic --policy corpus-policy.json --output candidates.jsonl --stats term-stats.jsonl

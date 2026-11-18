@@ -6,7 +6,7 @@
 
 確定後にホストが検索する文書とフィールドから、日本語の補完語を生成します。文書スナップショットのIDと、`{"id":"doc-1","text":"りんごを食べた。"}` のようなUTF-8のJSONLを使います。質問文が検索対象なら質問文を、タイトルと本文が検索対象なら両方を決めた順序で同じ文書IDにまとめます。表示用の抜粋など、検索範囲外のフィールドは除外します。入力文書のIDは一意にします。
 
-ネイティブCLIで [SudachiのRust実装](https://github.com/WorksApplications/sudachi.rs) を使い、固定済みの辞書スナップショットとバージョン付きの抽出設定を指定します。Sudachiの品詞 `名詞`、`動詞`、`形容詞` と分割モードBから始めます。空のキーを拒否し、設定可能なストップワード・除外品詞の規則を適用します。M1で標本を記録し、分割モード、未知語、頻出でも補完に適さない語、不要な固有名詞を確認してから既定の設定を確定します。
+ネイティブCLIで [SudachiのRust実装](https://github.com/WorksApplications/sudachi.rs) を使い、固定済みの辞書スナップショットとバージョン付きの抽出設定を指定します。Sudachiの品詞 `名詞`、`動詞`、`形容詞` と分割モードBから始めます。空のキーを拒否し、設定可能なストップワード・除外品詞の規則を適用します。既定では未知語、数詞、非自立可能な動詞と少数の頻出語を除外します。辞書の一つの読みでは不足する場合、設定の `aliases` で別の読みを優先して追加できます。デモでは「日本」に `nihon` を追加し、Sudachiの読みから得た `nippon` も保持しています。長音は `biitoruzu`、`bi-toruzu`、`びーとるず` の形を保持できます。
 
 ## 抽出、集計、索引生成
 
@@ -31,7 +31,7 @@ bm25_sum(t) = sum of bm25(t, d) for documents that contain t
 
 ## CLIとデモの準備
 
-M3で実装するコマンド案です。
+以下のコマンドで候補と索引を生成します。
 
 ```sh
 nemesia extract --input documents.jsonl --dictionary system.dic --policy corpus-policy.json --output candidates.jsonl --stats term-stats.jsonl

@@ -2,7 +2,7 @@
 
 [日本語](ja/matching.md) · [Architecture](architecture.md) · [Roadmap](roadmap.md)
 
-This is the proposed v0.1 contract. Milestone M1 freezes the reference cases before tuning.
+This is the v0.1 matching contract. The exhaustive oracle freezes expected cases for later tuning.
 
 ## Candidates and normalization
 
@@ -17,7 +17,7 @@ The CLI accepts UTF-8 JSONL. Each row contains a stable `u32` `id`, a nonempty `
 }
 ```
 
-Normalize match keys and queries with the same Rust implementation and pinned Unicode data. Apply NFKC, Unicode default lowercase, then collapse runs of Unicode whitespace to one ASCII space. Remove leading whitespace. Trim trailing space from stored keys and preserve a single trailing space in nonempty queries. Distance counts Unicode scalar values after normalization. Keep the original display string for rendering and selection.
+Normalize match keys and queries with the same Rust implementation and pinned Unicode data. Apply NFKC, Unicode per-scalar lowercase, then collapse runs of Unicode whitespace to one ASCII space. Remove leading whitespace. Trim trailing space from stored keys and preserve a single trailing space in nonempty queries. Distance counts Unicode scalar values after normalization. Keep the original display string for rendering and selection.
 
 The canonical match key is the normalized display text. Other keys are explicitly supplied aliases or full-phrase readings produced during the build. Whole-phrase readings preserve order, including leading words. Standalone synonyms, dropped leading words and substrings are excluded from automatic alias generation in v0.1. The corpus producer can explicitly supply alternate phrases as aliases.
 
@@ -25,7 +25,7 @@ The canonical match key is the normalized display text. Other keys are explicitl
 
 For a normalized nonempty query `q` and key `s`, compute the minimum Levenshtein distance from `q` to any nonempty leading prefix of `s`. The permitted edits are insertion, deletion and substitution, each with cost one. Characters after the chosen prefix are free. Swapping two different neighboring characters is evaluated as ordinary edits. An empty or whitespace-only input returns zero suggestions.
 
-The default edit budget for each normalized query variant is `0` at 1–2 scalars, `1` at 3–5, and `2` at 6 or more. A variant ending in a normalized space uses budget `0` to preserve the word boundary. These defaults are subject to the M1 quality check.
+The default edit budget for each normalized query variant is `0` at 1–2 scalars, `1` at 3–5, and `2` at 6 or more. A variant ending in a normalized space uses budget `0` to preserve the word boundary. These are the v0.1 defaults.
 
 | Input                  | Key                | Expected                                              |
 | ---------------------- | ------------------ | ----------------------------------------------------- |
