@@ -6,7 +6,7 @@ Fast, typo-tolerant query autocompletion powered by Rust and WebAssembly. Nemesi
 
 ## Quick start
 
-Download the matching CLI from [GitHub Releases](https://github.com/tkhshtsh0917/nemesia/releases): `nemesia-macos-aarch64` for Apple Silicon or `nemesia-linux-x86_64` for Linux x86-64. Compare its SHA-256 with the matching entry in `SHA256SUMS`. Run these commands in a directory containing the downloaded binary:
+Download the matching CLI from [GitHub Releases](https://github.com/tkhshtsh0917/nemesia/releases): `nemesia-macos-aarch64` for Apple Silicon or `nemesia-linux-x86_64` for Linux x86-64. In v0.1.0, these require macOS 11 or later and glibc 2.34 or later, respectively. For other environments, see [building from source](docs/usage.md#install-the-cli). Compare its SHA-256 with the matching entry in `SHA256SUMS`. Run these commands in a directory containing the downloaded binary:
 
 ```sh
 case "$(uname -sm)" in
@@ -27,7 +27,7 @@ Use a fresh output path if you run `build` again. This example uses a supplied c
 
 ## Use it in a browser
 
-Use the CLI output `suggestions.nmsi` and the WASM from the same release. The [browser quick start](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/browser-quickstart.md) shows how to generate JavaScript bindings, load the index, and display suggestions in an existing page. See the [live demo](https://tkhshtsh0917.github.io/nemesia-demo/) once the release is deployed.
+Use the CLI output `suggestions.nmsi` and the WASM from the same release. The [browser quick start](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/browser-quickstart.md) shows how to generate JavaScript bindings, load the index, and display suggestions in an existing page. See the [live demo](https://tkhshtsh0917.github.io/nemesia-demo/).
 
 ## Documentation
 

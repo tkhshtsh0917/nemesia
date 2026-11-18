@@ -2,7 +2,7 @@
 
 [日本語](ja/roadmap.md) · [Architecture](architecture.md) · [Matching specification](matching.md)
 
-M0–M5 have implementation and regression coverage. M6 has measurements on synthetic data and a small Japanese evaluation set. M7 has a local artifact round trip. Verify hosted deployment and notification after configuring the GitHub release and Pages.
+M0–M5 have implementation and regression coverage. M6 has measurements on synthetic data and a small Japanese evaluation set. M7 verified the v0.1.0 release artifacts, release-triggered demo deployment, and published Rust API reference. Rolling back to a different released version still needs a second release to verify.
 
 | Phase and owner              | Deliverable and exit check                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

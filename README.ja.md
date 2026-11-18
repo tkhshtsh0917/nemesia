@@ -6,7 +6,7 @@ RustとWebAssemblyで動く、高速で誤入力に強いクエリ補完。入�
 
 ## クイックスタート
 
-[GitHub Releases](https://github.com/tkhshtsh0917/nemesia/releases)から対応するCLIをダウンロードします。Apple Siliconは `nemesia-macos-aarch64`、Linux x86-64は `nemesia-linux-x86_64` です。ダウンロードしたファイルのSHA-256を `SHA256SUMS` の該当行と照合してください。取得したバイナリがあるディレクトリで次を実行します。
+[GitHub Releases](https://github.com/tkhshtsh0917/nemesia/releases)から対応するCLIをダウンロードします。Apple Siliconは `nemesia-macos-aarch64`、Linux x86-64は `nemesia-linux-x86_64` です。v0.1.0では、それぞれmacOS 11以降、glibc 2.34以降が必要です。その他の環境では[ソースからビルドする手順](docs/ja/usage.md#cliを用意する)を参照してください。ダウンロードしたファイルのSHA-256を `SHA256SUMS` の該当行と照合してください。取得したバイナリがあるディレクトリで次を実行します。
 
 ```sh
 case "$(uname -sm)" in
@@ -27,7 +27,7 @@ printf '%s\n' '{"id":1,"text":"Tokyo Station","weight":10}' > candidates.jsonl
 
 ## ブラウザで使う
 
-CLIが出力した `suggestions.nmsi` と、同じリリースのWASMを使います。[ブラウザのクイックスタート](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/ja/browser-quickstart.md)では、JavaScriptバインディングを生成し、索引を読み込んで、既存のページに候補を表示する方法を説明します。リリースの配信後は[デモ](https://tkhshtsh0917.github.io/nemesia-demo/)も利用できます。
+CLIが出力した `suggestions.nmsi` と、同じリリースのWASMを使います。[ブラウザのクイックスタート](https://github.com/tkhshtsh0917/nemesia-demo/blob/main/docs/ja/browser-quickstart.md)では、JavaScriptバインディングを生成し、索引を読み込んで、既存のページに候補を表示する方法を説明します。[デモ](https://tkhshtsh0917.github.io/nemesia-demo/)も利用できます。
 
 ## ドキュメント
 
