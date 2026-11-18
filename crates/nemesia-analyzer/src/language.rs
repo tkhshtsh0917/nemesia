@@ -18,6 +18,7 @@ pub struct Policy {
     pub stopwords: Vec<String>,
     pub stoptags: Vec<Vec<String>>,
     pub ranking: crate::Ranking,
+    pub aliases: BTreeMap<String, Vec<String>>,
 }
 
 impl Default for Policy {
@@ -37,6 +38,7 @@ impl Default for Policy {
                 vec!["動詞".into(), "非自立可能".into()],
             ],
             ranking: crate::Ranking::Df,
+            aliases: BTreeMap::new(),
         }
     }
 }
@@ -61,6 +63,7 @@ pub struct Analyzer {
     keep_unknown: bool,
     stopwords: BTreeSet<String>,
     stoptags: Vec<Vec<String>>,
+    reviewed: BTreeMap<String, BTreeSet<String>>,
 }
 
 impl Analyzer {
@@ -81,6 +84,7 @@ impl Analyzer {
             return Err("invalid stopword or stoptag policy".into());
         }
 
+        let reviewed = reviewed_aliases(&policy.aliases)?;
         let stopwords = policy
             .stopwords
             .iter()
@@ -94,7 +98,12 @@ impl Analyzer {
             keep_unknown: policy.keep_unknown,
             stopwords,
             stoptags: policy.stoptags.clone(),
+            reviewed,
         })
+    }
+
+    pub(crate) fn reviewed(&self, key: &str) -> impl Iterator<Item = &String> {
+        self.reviewed.get(key).into_iter().flatten()
     }
 
     pub(crate) fn tokens(&mut self, text: &str, counts: &mut Exclusions) -> Fallible<Vec<Token>> {
@@ -150,6 +159,11 @@ impl Analyzer {
                 surface.to_string(),
                 reading.to_owned(),
                 reading.to_hiragana(),
+                reading
+                    .split('ー')
+                    .map(ConvertJapanese::to_hiragana)
+                    .collect::<Vec<_>>()
+                    .join("ー"),
                 reading.to_romaji(),
                 long_mark_romaji(reading),
             ] {
@@ -166,6 +180,31 @@ impl Analyzer {
         }
         Ok(out)
     }
+}
+
+fn reviewed_aliases(
+    input: &BTreeMap<String, Vec<String>>,
+) -> Fallible<BTreeMap<String, BTreeSet<String>>> {
+    if input.len() > 10_000 {
+        return Err("too many alias overrides".into());
+    }
+    let mut out = BTreeMap::new();
+    for (raw, aliases) in input {
+        let key = normalize(raw, MAX_KEY, false)?;
+        let normalized = aliases
+            .iter()
+            .map(|s| normalize(s, MAX_KEY, false))
+            .collect::<Result<BTreeSet<_>, _>>()?;
+        if key.is_empty()
+            || aliases.len() > nemesia_index::MAX_ALIASES
+            || normalized.contains("")
+            || normalized.contains(&key)
+            || out.insert(key, normalized).is_some()
+        {
+            return Err("invalid alias override".into());
+        }
+    }
+    Ok(out)
 }
 
 fn long_mark_romaji(reading: &str) -> String {

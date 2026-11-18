@@ -140,7 +140,7 @@ pub fn extract(
     let mut rows = Vec::with_capacity(entries.len());
     let mut stats = Vec::with_capacity(entries.len());
     let mut aliases = 0;
-    for (position, (_, i)) in terms.into_iter().enumerate() {
+    for (position, (key, i)) in terms.into_iter().enumerate() {
         let id = (position + 1) as u32;
         let term = &mut entries[i];
         let scaled = (term.bm25 * SCALE).round();
@@ -152,12 +152,19 @@ pub fn extract(
             Ranking::Df => term.df,
             Ranking::Bm25Sum => bm25_sum,
         };
-        aliases += term.aliases.len();
+        let mut selected: BTreeSet<_> = analyzer.reviewed(&key).cloned().collect();
+        for alias in std::mem::take(&mut term.aliases) {
+            if selected.len() == MAX_ALIASES {
+                break;
+            }
+            selected.insert(alias);
+        }
+        aliases += selected.len();
         rows.push(Candidate {
             id,
             text: std::mem::take(&mut term.display),
             weight,
-            aliases: std::mem::take(&mut term.aliases).into_iter().collect(),
+            aliases: selected.into_iter().collect(),
         });
         stats.push(TermStats {
             id,

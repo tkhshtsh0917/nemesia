@@ -26,6 +26,9 @@ pub fn normalize(raw: &str, max: usize, trailing: bool) -> Result<String, &'stat
     if raw.len() > max * 4 {
         return Err("input exceeds byte limit");
     }
+    if raw.chars().count() > max {
+        return Err("input exceeds scalar limit");
+    }
     let mut value = String::new();
     let mut space = false;
     for c in raw.nfkc().flat_map(char::to_lowercase) {
