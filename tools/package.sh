@@ -8,7 +8,11 @@ case "$platform:$(uname -sm)" in
 esac
 
 workspace="$(pwd -P)"
-cargo_home="$(cd "${CARGO_HOME:-$HOME/.cargo}" && pwd -P)"
+# A clean hosted runner may not have created Cargo's cache directory yet.
+cargo_home="${CARGO_HOME:-$HOME/.cargo}"
+mkdir -p "$cargo_home"
+cargo_home="$(cd "$cargo_home" && pwd -P)"
+export CARGO_HOME="$cargo_home"
 sysroot="$(rustc --print sysroot)"
 separator=$'\x1f'
 export CARGO_ENCODED_RUSTFLAGS="--remap-path-prefix=$workspace=/nemesia${separator}--remap-path-prefix=$cargo_home=/cargo${separator}--remap-path-prefix=$sysroot=/rust-toolchain"
