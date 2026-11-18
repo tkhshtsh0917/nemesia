@@ -1,0 +1,12 @@
+[package]
+name = "nemesia-engine"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+nemesia-index.workspace = true
+serde.workspace = true
