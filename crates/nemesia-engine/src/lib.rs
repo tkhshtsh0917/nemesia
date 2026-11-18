@@ -130,3 +130,6 @@ pub fn reference(
         })
         .collect())
 }
+
+mod trie;
+pub use trie::{WORK_LIMIT, suggest, suggest_bounded};

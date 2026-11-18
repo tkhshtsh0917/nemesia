@@ -3,6 +3,14 @@
 version = 4
 
 [[package]]
+name = "nemesia-builder"
+version = "0.1.0"
+dependencies = [
+ "nemesia-engine",
+ "nemesia-index",
+]
+
+[[package]]
 name = "nemesia-engine"
 version = "0.1.0"
 dependencies = [

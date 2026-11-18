@@ -53,3 +53,5 @@ pub fn normalize(raw: &str, max: usize, trailing: bool) -> Result<String, &'stat
     }
     Ok(value)
 }
+
+pub mod binary;
