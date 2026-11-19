@@ -1,18 +1,88 @@
 <!doctype html>
 <html lang="en">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nemesia Rust API</title>
-<main>
-  <h1>Nemesia Rust API</h1>
-  <p>API reference for the current Nemesia release.</p>
-  <ul>
-    <li><a href="nemesia_engine/index.html">nemesia_engine</a>: query a validated completion index.</li>
-    <li><a href="nemesia_index/index.html">nemesia_index</a>: candidate types, normalization, and index reader.</li>
-    <li><a href="nemesia_builder/index.html">nemesia_builder</a>: compile an index from candidate rows.</li>
-    <li><a href="nemesia_analyzer/index.html">nemesia_analyzer</a>: extract Japanese candidates and ranking statistics on the server.</li>
-    <li><a href="nemesia_wasm/index.html">nemesia_wasm</a>: the read-only WebAssembly boundary.</li>
-  </ul>
-  <p><a href="https://github.com/tkhshtsh0917/nemesia/blob/main/docs/usage.md">CLI and Rust usage</a> · <a href="https://github.com/tkhshtsh0917/nemesia/blob/main/docs/ja/usage.md" lang="ja">日本語の利用ガイド</a> · <a href="release.json">Deployed release tag</a></p>
-</main>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Rust API reference for Nemesia's completion engine, index, native extraction, and WebAssembly boundary.">
+    <meta name="rustdoc-vars" data-root-path="./" data-themes="" data-resource-suffix="">
+    <title>Nemesia Rust API</title>
+    <link rel="icon" href="static.files/@FAVICON@">
+    <link rel="stylesheet" href="static.files/@NORMALIZE_CSS@">
+    <link rel="stylesheet" href="static.files/@RUSTDOC_CSS@">
+    <style>
+      .rustdoc main.api-index {
+        width: 100%;
+        max-width: 60rem;
+        margin-inline: auto;
+        padding: clamp(1.5rem, 5vw, 3.5rem) clamp(1rem, 5vw, 2.5rem);
+      }
+      .api-index .item-table {
+        display: block;
+      }
+      .api-index .item-table > div {
+        display: grid;
+        grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
+        gap: 0.25rem 1.25rem;
+        align-items: baseline;
+        padding: 0.65rem 0.75rem;
+      }
+      .api-index .item-table > div:nth-child(odd) {
+        background-color: var(--table-alt-row-background-color);
+      }
+      .api-index .item-table dd {
+        margin: 0;
+        padding-inline-start: 0;
+      }
+      .api-index .documentation-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.25rem;
+        padding: 1.25rem 0 0;
+        margin-top: 2rem;
+        border-top: 1px solid var(--border-color);
+      }
+      @media (max-width: 40rem) {
+        .api-index .item-table > div {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+    </style>
+    <script src="static.files/@STORAGE_JS@"></script>
+  </head>
+  <body class="rustdoc">
+    <main id="main-content" class="content api-index">
+      <header class="main-heading">
+        <h1>Nemesia Rust API</h1>
+      </header>
+      <p>API reference for the current Nemesia release.</p>
+      <h2 id="crates">Crates</h2>
+      <dl class="item-table">
+        <div>
+          <dt><a href="nemesia_engine/index.html">nemesia_engine</a></dt>
+          <dd>Query a validated completion index.</dd>
+        </div>
+        <div>
+          <dt><a href="nemesia_index/index.html">nemesia_index</a></dt>
+          <dd>Candidate types, normalization, and the index reader.</dd>
+        </div>
+        <div>
+          <dt><a href="nemesia_builder/index.html">nemesia_builder</a></dt>
+          <dd>Compile an index from candidate rows.</dd>
+        </div>
+        <div>
+          <dt><a href="nemesia_analyzer/index.html">nemesia_analyzer</a></dt>
+          <dd>Extract Japanese candidates and ranking statistics on the server.</dd>
+        </div>
+        <div>
+          <dt><a href="nemesia_wasm/index.html">nemesia_wasm</a></dt>
+          <dd>Read-only WebAssembly boundary.</dd>
+        </div>
+      </dl>
+      <nav class="documentation-links" aria-label="Guides and release">
+        <a href="https://github.com/tkhshtsh0917/nemesia/blob/main/docs/usage.md">CLI and Rust usage</a>
+        <a href="https://github.com/tkhshtsh0917/nemesia/blob/main/docs/ja/usage.md" lang="ja">日本語の利用ガイド</a>
+        <a href="release.json">Deployed release tag</a>
+      </nav>
+    </main>
+  </body>
 </html>

@@ -16,6 +16,8 @@ jobs:
   build:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    outputs:
+      landing-sha256: ${{ steps.docs.outputs.landing-sha256 }}
     steps:
       - name: Check published tag
         env:
@@ -29,20 +31,31 @@ jobs:
           gh release view "$TAG" --json isDraft,isPrerelease --jq '(.isDraft or .isPrerelease) | not' | grep -Fx true
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          path: presentation
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
           ref: refs/tags/${{ inputs.tag }}
+          path: release
           persist-credentials: false
       - name: Build API reference
+        id: docs
+        working-directory: release
         env:
           TAG: ${{ inputs.tag }}
         shell: bash
         run: |
           set -euo pipefail
-          bash tools/rustdoc.sh target/rustdoc-site
+          bash ../presentation/tools/rustdoc.sh target/rustdoc-site
+          landing_sha="$(sha256sum target/rustdoc-site/index.html | awk '{print $1}')"
           jq -n --arg tag "$TAG" --arg revision "$(git rev-parse HEAD)" \
-            '{tag: $tag, revision: $revision}' > target/rustdoc-site/release.json
+            --arg presentationRevision "$GITHUB_SHA" --arg landingSha256 "$landing_sha" \
+            '{tag: $tag, revision: $revision, presentationRevision: $presentationRevision, landingSha256: $landingSha256}' \
+            > target/rustdoc-site/release.json
+          echo "landing-sha256=$landing_sha" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
         with:
-          path: target/rustdoc-site
+          path: release/target/rustdoc-site
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -66,12 +79,19 @@ jobs:
         env:
           PAGE: ${{ steps.pages.outputs.page_url }}
           TAG: ${{ inputs.tag }}
+          LANDING_SHA: ${{ needs.build.outputs.landing-sha256 }}
         shell: bash
         run: |
           set -euo pipefail
           base="${PAGE%/}"
+          [[ "$LANDING_SHA" =~ ^[a-f0-9]{64}$ ]]
           for attempt in {1..12}; do
-            if actual="$(curl --max-time 15 -fsS "$base/release.json?run=$GITHUB_RUN_ID" | jq -er .tag)" && [[ "$actual" == "$TAG" ]]; then
+            query="run=$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT-$attempt"
+            if curl --max-time 15 -fsS "$base/release.json?$query" |
+              jq -e --arg tag "$TAG" --arg revision "$GITHUB_SHA" --arg sha "$LANDING_SHA" \
+                '.tag == $tag and .presentationRevision == $revision and .landingSha256 == $sha' >/dev/null &&
+              curl --max-time 15 -fsS "$base/?$query" -o "$RUNNER_TEMP/rustdoc-index.html" &&
+              printf '%s  %s\n' "$LANDING_SHA" "$RUNNER_TEMP/rustdoc-index.html" | sha256sum -c -; then
               curl --max-time 15 -fsS "$base/nemesia_engine/index.html" -o /dev/null
               exit 0
             fi
