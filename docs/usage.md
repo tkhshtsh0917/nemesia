@@ -14,7 +14,7 @@ awk '$2 == "nemesia-macos-aarch64"' SHA256SUMS
 Check that the hashes match, give the binary execute permission, and run it by path. To build from source, check out a release tag and use the repository's pinned Rust toolchain:
 
 ```sh
-git clone --branch v0.1.0 https://github.com/tkhshtsh0917/nemesia.git
+git clone --branch v0.2.0 https://github.com/tkhshtsh0917/nemesia.git
 cd nemesia
 cargo build --locked --release -p nemesia-cli
 ./target/release/nemesia --version
@@ -41,8 +41,8 @@ The published CLI and WASM are ready-to-use artifacts. To call the engine direct
 
 ```toml
 [dependencies]
-nemesia-engine = { git = "https://github.com/tkhshtsh0917/nemesia", tag = "v0.1.0" }
-nemesia-index = { git = "https://github.com/tkhshtsh0917/nemesia", tag = "v0.1.0" }
+nemesia-engine = { git = "https://github.com/tkhshtsh0917/nemesia", tag = "v0.2.0" }
+nemesia-index = { git = "https://github.com/tkhshtsh0917/nemesia", tag = "v0.2.0" }
 ```
 
 ```rust

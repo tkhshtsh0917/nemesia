@@ -14,7 +14,7 @@ awk '$2 == "nemesia-macos-aarch64"' SHA256SUMS
 ハッシュが一致することを確認し、バイナリに実行権限を付け、パスを指定して実行します。ソースからビルドする場合は、リリースタグをcheckoutし、リポジトリが固定したRustツールチェーンを使います。
 
 ```sh
-git clone --branch v0.1.0 https://github.com/tkhshtsh0917/nemesia.git
+git clone --branch v0.2.0 https://github.com/tkhshtsh0917/nemesia.git
 cd nemesia
 cargo build --locked --release -p nemesia-cli
 ./target/release/nemesia --version
@@ -41,8 +41,8 @@ nemesia suggest --index suggestions.nmsi --query 'たべ' --limit 8
 
 ```toml
 [dependencies]
-nemesia-engine = { git = "https://github.com/tkhshtsh0917/nemesia", tag = "v0.1.0" }
-nemesia-index = { git = "https://github.com/tkhshtsh0917/nemesia", tag = "v0.1.0" }
+nemesia-engine = { git = "https://github.com/tkhshtsh0917/nemesia", tag = "v0.2.0" }
+nemesia-index = { git = "https://github.com/tkhshtsh0917/nemesia", tag = "v0.2.0" }
 ```
 
 ```rust
